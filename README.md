@@ -1,11 +1,13 @@
-# SimpleVQA
-A Deep Learning based No-reference Quality Assessment Model for UGC Videos
-## Description
-This is a repository for the model proposed in the paper "A Deep Learning based No-reference Quality Assessment Model for UGC Videos". [Arxiv Version](https://arxiv.org/abs/2204.14047) [ACM MM 2022 Version](https://dl.acm.org/doi/10.1145/3503161.3548329)
+# KFVQA
+No-reference video quality assessment with guidance of keyframe extraction
 
-## Usage
+## Intruduction
 
-### Install Requirements
+### Abstract
+
+Video quality assessment (VQA) is a foundational research in computer vision that aims to simulate the human visual system to evaluate video quality and determine its quality level. The most fundamental factor affecting the accuracy of the final score predicted by the video quality assessment model is the extracted frames. Most existing methods prioritize the study of refining feature extraction to improve performance while ignoring improvements in initial frame extraction. To solve these problems, we propose a no-reference video quality assessment with the guidance of keyframe extraction(KFVQA), which aims to improve model performance through keyframe extraction. Specifically, we propose a keyframe extraction module to ensure that the extracted frames present diversity and greater representativeness in content, and avoid excessive similarity and repetition rates. Secondly, we utilize the self-attention for feature focusing module and weighted feature fusion module in KFVQA to better extract spatial features and more accurately focus and emphasize key motion features and spatial feature parts to improve the accuracy and robustness of quality assessment.
+
+## 1. Requirements
 ```
 pytorch
 opencv
@@ -15,78 +17,41 @@ torchvision
 torchvideo
 ```
 
-### Download databases
+## 2.Databases
 [LSVQ](https://github.com/baidut/PatchVQ)
 [KoNViD-1k](http://database.mmsp-kn.de/konvid-1k-database.html)
 [Youtube-UGC](https://media.withyoutube.com/)
 
-### Train models
+## 3. Train models
 1. Extract video frames
 ```shell
-python -u extract_frame_LSVQ.py >> logs/extract_frame_LSVQ.log
+python extract_frame.py
 ```
 2. Extract motion features
 ```shell
- CUDA_VISIBLE_DEVICES=0 python -u extract_SlowFast_features_LSVQ.py \
- --database LSVQ \
- --model_name SlowFast \
- --resize 224 \
- --feature_save_folder LSVQ_SlowFast_feature/ \
- >> logs/extracted_LSVQ_SlowFast_features.log
+python extract_SlowFast_features_VQA.py 
 ```
 3. Train the model
 ```shell
- CUDA_VISIBLE_DEVICES=0 python -u train_baseline.py \
- --database LSVQ \
- --model_name UGC_BVQA_model \
- --conv_base_lr 0.00001 \
- --epochs 10 \
- --train_batch_size 8 \
- --print_samples 1000 \
- --num_workers 6 \
- --ckpt_path ckpts \
- --decay_ratio 0.9 \
- --decay_interval 2 \
- --exp_version 0 \
- --loss_type L1RankLoss \
- --resize 520 \
- --crop_size 448 \
- >> logs/train_UGC_BVQA_model_L1RankLoss_resize_520_crop_size_448_exp_version_0.log
+python train.py
 ```
-### Test the model
-You can download the trained model via [Google Drive](https://drive.google.com/file/d/137XJdq3reNMJ9tkBNqKUYTY_dTlcwXc3/view?usp=sharing).
+## 4.Test the model
+You can download the trained model via Google Drive.
 
 Test on the public VQA database
+
 ```shell
-CUDA_VISIBLE_DEVICES=0 python -u test_on_pretrained_model.py \
---database KoNViD-1k \
---train_database LSVQ \
---model_name UGC_BVQA_model \
---feature_type SlowFast \
---trained_model ckpts/UGC_BVQA_model.pth \
---num_workers 6 \
->> logs/test_on_KoNViD-1k_train_on_LSVQ.log
+python test_on_pretrained_model.py
 ```
 
 Test on a single video
 ```shell
-CUDA_VISIBLE_DEVICES=0 python -u test_demo.py \
---method_name single-scale \
---dist videos/2999049224_original_centercrop_960x540_8s.mp4 \
---output result.txt \
---is_gpu \
->> logs/test_demo.log
+python test_demo.py
 ```
 
-### Citation
+### Acknowledgements
 
 If you find this code is useful for your research, please cite:
 ```
-@inproceedings{sun2022a,
-title = {A Deep Learning Based No-Reference Quality Assessment Model for UGC Videos},
-author = {Sun, Wei and Min, Xiongkuo and Lu, Wei and Zhai, Guangtao},
-booktitle={Proceedings of the 30th ACM International Conference on Multimedia},
-year = {2022},
-pages = {856–865},
-}
+
 ```
