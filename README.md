@@ -36,7 +36,7 @@ python extract_SlowFast_features_VQA.py
 python train.py
 ```
 ## 4.Test the model
-You can download the trained model via Google Drive.
+You can download the trained model via [Google Drive](https://drive.google.com/drive/my-drive).
 
 Test on the public VQA database
 
